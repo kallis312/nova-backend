@@ -27,7 +27,7 @@ JWT_SECRET=
 npm run dev
 ```
 
-- Build for Producntion
+- Build for Production
 ```sh
 npm run build
 ```
