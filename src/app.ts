@@ -5,10 +5,11 @@ import helmet from 'helmet';
 import cors from 'cors';
 import session from 'express-session';
 import passport from '@/config/passport';
-import authRoutes from '@/routes/authRoutes';
 // import userRoutes from './routes/userRoutes';
 import requestLogger from '@/middlewares/requestLogger';
 import { errorHandler } from '@/middlewares/errorHandler';
+import authRoutes from '@/routes/authRoutes';
+import dicomRoutes from '@/routes/dicomRoutes';
 
 const app: Application = express();
 
@@ -48,6 +49,7 @@ app.use(
 app.use(express.static('public'))
 // Routes
 app.use(apiPrefix + '/auth', authRoutes);
+app.use(apiPrefix + '/dicom', dicomRoutes);
 // app.use('/api/users', userRoutes);
 
 // Error handling
