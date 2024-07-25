@@ -1,5 +1,6 @@
 import express, { Application } from 'express';
 import morgan from 'morgan';
+import swaggerUi from "swagger-ui-express";
 import helmet from 'helmet';
 import cors from 'cors';
 import session from 'express-session';
@@ -34,7 +35,17 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(
+  "/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(undefined, {
+    swaggerOptions: {
+      url: "/openapi.yaml",
+    },
+  })
+);
 
+app.use(express.static('public'))
 // Routes
 app.use(apiPrefix + '/auth', authRoutes);
 // app.use('/api/users', userRoutes);
