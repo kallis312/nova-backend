@@ -4,7 +4,6 @@ import { loginValidator, registerValidator } from '@/validators/authValidator';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log(req.body);
     const body = loginValidator.parse(req.body);
     const user = await loginUser(body);
     const token = generateToken(user);
