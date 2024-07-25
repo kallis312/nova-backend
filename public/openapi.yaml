@@ -11,6 +11,8 @@ info:
     email: kyosuke@callisto-ai.com
   version: 1.0.0
 servers:
+  - url: /api/v1
+    description: "Local-Server"
   - url: https://nova-production-server/api/v1
     description: "Production-Server"
   - url: https://nova-staging-server/api/v1
@@ -42,7 +44,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginResponse"
-        "400":
+        "500":
           description: Invalid username/password supplied
           content:
             application/json:
@@ -50,6 +52,31 @@ paths:
                 message: not found user
               schema:
                 $ref: "#/components/schemas/MessageResponse"
+  /auth/register:
+      post:
+        tags:
+          - Auth
+        summary: Register user into the system
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterRequest"
+        responses:
+          "200":
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/LoginResponse"
+          "500":
+            description: Invalid username/password supplied
+            content:
+              application/json:
+                example:
+                  message: not found user
+                schema:
+                  $ref: "#/components/schemas/MessageResponse"
   /auth/logout:
     get:
       tags:
@@ -236,7 +263,7 @@ components:
     LoginResponse:
       type: object
       example:
-        token: exsss
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJjYWxsaXN0byIsImlhdCI6MTcyMTg3NTI1OSwiZXhwIjoxNzIxODc4ODU5fQ.4oNPNjp4kfNotv-e2yDbfF_FqskQc3nnkmFVW5RaE1k
       properties:
         token:
           type: string
@@ -244,11 +271,24 @@ components:
       type: object
       example:
         username: callisto
-        psssword: callisto
+        password: callisto
       properties:
         username:
           type: string
         password:
+          type: string
+    RegisterRequest:
+      type: object
+      example:
+        username: callisto
+        password: callisto
+        confirmPassword: callisto
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        confirmPassword:
           type: string
     MessageResponse:
       type: object
