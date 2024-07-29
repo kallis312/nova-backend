@@ -14,11 +14,10 @@ export const loginUser = async ({ username, password }: LoginRequest) => {
   const user = await prisma.user.findUnique({
     where: { username },
   });
-
   if (!user) throw new Error('Invalid username or password');
 
   const isPasswordValid = bcrypt.compareSync(password, user.password);
-
+  
   if (!isPasswordValid) throw new Error('Invalid username or password');
 
   return user;

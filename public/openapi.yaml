@@ -3,7 +3,7 @@ info:
   title: Nova Slicer Server 1.0
   description: |-
     This is the API definition for the Nova slicer server.
-    
+
     Reference Link:
     - [The nova slicer server repository](https://github.com/callisto-ai)
     - [The source API definition for the Nova slicer server](https://github.com/callisto-ai)
@@ -13,10 +13,10 @@ info:
 servers:
   - url: /api/v1
     description: "Local-Server"
+  - url: http://20.78.12.2:8080/api/v1
+    description: "Staging-Server"
   - url: https://nova-production-server/api/v1
     description: "Production-Server"
-  - url: https://nova-staging-server/api/v1
-    description: "Staging-Server"
 tags:
   - name: Auth
     description: User Authentication
@@ -33,18 +33,11 @@ paths:
         - Auth
       summary: Logs user into the system
       requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LoginRequest"
+        $ref: "#/components/requestBodies/Login"
       responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LoginResponse"
-        "500":
+        200:
+          $ref: "#/components/responses/Login"
+        500:
           description: Invalid username/password supplied
           content:
             application/json:
@@ -53,30 +46,23 @@ paths:
               schema:
                 $ref: "#/components/schemas/MessageResponse"
   /auth/register:
-      post:
-        tags:
-          - Auth
-        summary: Register user into the system
-        requestBody:
+    post:
+      tags:
+        - Auth
+      summary: Register user into the system
+      requestBody:
+        $ref: "#/components/requestBodies/Register"
+      responses:
+        200:
+          $ref: "#/components/responses/Register"
+        500:
+          description: Invalid username/password supplied
           content:
             application/json:
+              example:
+                message: Passwords do not match
               schema:
-                $ref: "#/components/schemas/RegisterRequest"
-        responses:
-          "200":
-            description: successful operation
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/LoginResponse"
-          "500":
-            description: Invalid username/password supplied
-            content:
-              application/json:
-                example:
-                  message: not found user
-                schema:
-                  $ref: "#/components/schemas/MessageResponse"
+                $ref: "#/components/schemas/MessageResponse"
   /auth/logout:
     get:
       tags:
@@ -118,15 +104,13 @@ paths:
           schema:
             type: integer
             format: int64
+            example: 1
+            minimum: 1
       responses:
         200:
-          description: Successfully
-          content:
-            application/json:
-              example:
-                message: Get Data
-              schema:
-                $ref: "#/components/schemas/MessageResponse"
+          $ref: "#/components/responses/DicomList"
+        500:
+          $ref: "#/components/responses/InternalError"
         401:
           $ref: "#/components/responses/Unauthorized"
       security:
@@ -143,17 +127,19 @@ paths:
           description: Dicom Id
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
+            example: dicom001
       responses:
         200:
           description: Successfully
           content:
             application/json:
               example:
-                message: Get Data
+                message: Downloading...
               schema:
                 $ref: "#/components/schemas/MessageResponse"
+        500:
+          $ref: "#/components/responses/InternalError"
         401:
           $ref: "#/components/responses/Unauthorized"
       security:
@@ -165,25 +151,34 @@ paths:
       summary: Get a annotation of a specific DICOM ID
       description: |-
         Get the annotation of a specific DICOM ID (all slices included)
-
-        Download DICOM file
       parameters:
         - name: id
           in: path
           description: Dicom Id
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
+            example: dicom001
       responses:
         200:
           description: Successfully
           content:
             application/json:
-              example:
-                message: Get Data
               schema:
-                $ref: "#/components/schemas/MessageResponse"
+                type: object
+                properties:
+                  annotatedBy:
+                    type: string
+                    example: callisto
+                  annotatedAt:
+                    type: string
+                    example: 2024-07-29T08:30:16.757Z
+                  slices: 
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Slice"
+        500:
+          $ref: "#/components/responses/InternalError"
         401:
           $ref: "#/components/responses/Unauthorized"
       security:
@@ -199,17 +194,22 @@ paths:
           description: Dicom Id
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
+            example: dicom001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DicomAnnotation"
       responses:
         200:
           description: Successfully
           content:
             application/json:
-              example:
-                message: Get Data
               schema:
-                $ref: "#/components/schemas/MessageResponse"
+                $ref: "#/components/schemas/DicomAnnotation"
+        500:
+          $ref: "#/components/responses/InternalError"
         401:
           $ref: "#/components/responses/Unauthorized"
       security:
@@ -254,6 +254,48 @@ paths:
         - JWTAuth: []
 components:
   responses:
+    Login:
+      description: Login Response
+      content:
+        application/json:
+          schema:
+            type: object
+            example:
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJjYWxsaXN0byIsImlhdCI6MTcyMTg3NTI1OSwiZXhwIjoxNzIxODc4ODU5fQ.4oNPNjp4kfNotv-e2yDbfF_FqskQc3nnkmFVW5RaE1k
+            properties:
+              token:
+                type: string
+    Register:
+      description: Register Response
+      content:
+        application/json:
+          schema:
+            type: object
+            example:
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJjYWxsaXN0byIsImlhdCI6MTcyMTg3NTI1OSwiZXhwIjoxNzIxODc4ODU5fQ.4oNPNjp4kfNotv-e2yDbfF_FqskQc3nnkmFVW5RaE1k
+            properties:
+              token:
+                type: string
+    DicomList:
+      description: Successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              total:
+                type: integer
+                example: 100
+              page:
+                type: integer
+                example: 1
+              perPage:
+                type: integer
+                example: 10
+              dicoms:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dicom"
     Unauthorized:
       description: Unauthorized
       content:
@@ -265,43 +307,96 @@ components:
       content:
         application/json:
           example:
-            message: Username must be at least 4 characters.
+            message: An unknown error occurred
+  requestBodies:
+    Login:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                example: callisto
+              password:
+                type: string
+                example: callisto
+    Register:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                example: callisto
+              password:
+                type: string
+                example: callisto
+              confirmPassword:
+                type: string
+                example: callisto
   schemas:
-    LoginResponse:
+    Dicom:
       type: object
-      example:
-        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJjYWxsaXN0byIsImlhdCI6MTcyMTg3NTI1OSwiZXhwIjoxNzIxODc4ODU5fQ.4oNPNjp4kfNotv-e2yDbfF_FqskQc3nnkmFVW5RaE1k
       properties:
-        token:
+        id:
           type: string
-    LoginRequest:
+          example: dicom001
+        patientId:
+          type: string
+          example: patient001
+        studyDate:
+          type: string
+          example: 2024-07-29T08:30:16.757Z
+        modality:
+          type: string
+          example: MRI
+        status:
+          type: string
+          example: unannotated
+          enum:
+            - unannotated
+            - annotated
+    DicomAnnotation:
       type: object
-      example:
-        username: callisto
-        password: callisto
       properties:
-        username:
-          type: string
-        password:
-          type: string
-    RegisterRequest:
-      type: object
-      example:
-        username: callisto
-        password: callisto
-        confirmPassword: callisto
-      properties:
-        username:
-          type: string
-        password:
-          type: string
-        confirmPassword:
-          type: string
+        slices:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/Slice"
     MessageResponse:
       type: object
       properties:
         message:
           type: string
+    Slice:
+      type: object
+      properties:
+        sliceIndex:
+          type: integer
+        annotations:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                example: polygon
+              label:
+                type: string
+                example: tumor
+              points:
+                type: array
+                example: [[20, 13], [13, 15]]
+                items:
+                  type: array
+                  items:
+                    type: number
+                  maxLength: 2
+                  minLength: 2
+
   securitySchemes:
     JWTAuth:
       type: http
