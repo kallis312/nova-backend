@@ -6,7 +6,11 @@
     "build": "tsc",
     "start": "node -r module-alias/register dist/server.js",
     "dev": "ts-node-dev -r tsconfig-paths/register src/server.ts",
+    "migrate": "npx prisma migrate dev",
     "test": "jest"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "keywords": [],
   "author": "",

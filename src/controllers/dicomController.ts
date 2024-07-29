@@ -63,8 +63,7 @@ export const getAnnotation = async (req: Request, res: Response, next: NextFunct
 
 export const actionAnnotation = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = req.user!
-    console.log(user)
+    const { username } = req.user!
     const { id } = req.params
     const dicomAnnotation = dicomAnnotationVallidator.parse(req.body);
     const existDicom = await prisma.dicom.findUnique({
@@ -74,7 +73,7 @@ export const actionAnnotation = async (req: Request, res: Response, next: NextFu
     if (!existDicom) throw new Error('No dicom found')
 
     const exsitDicomAnnotation = await prisma.annotation.findFirst({
-      where: { dicomId: id, annotatedBy: 'callisto' },
+      where: { dicomId: id, annotatedBy: username },
       orderBy: {
         annotatedAt: 'desc'
       }
@@ -95,7 +94,7 @@ export const actionAnnotation = async (req: Request, res: Response, next: NextFu
       resultDicomAnnotation = await prisma.annotation.create({
         data: {
           dicomId: id,
-          annotatedBy: 'callisto',
+          annotatedBy: username,
           slices: dicomAnnotation.slices
         },
         select: {
