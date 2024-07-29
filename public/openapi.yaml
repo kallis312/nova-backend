@@ -257,8 +257,15 @@ components:
     Unauthorized:
       description: Unauthorized
       content:
-        text/plain:
-          example: Unauthorized
+        application/json:
+          example:
+            message: Unauthorized
+    InternalError:
+      description: InternalError
+      content:
+        application/json:
+          example:
+            message: Username must be at least 4 characters.
   schemas:
     LoginResponse:
       type: object
