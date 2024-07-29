@@ -10,6 +10,7 @@ import requestLogger from '@/middlewares/requestLogger';
 import { errorHandler } from '@/middlewares/errorHandler';
 import authRoutes from '@/routes/authRoutes';
 import dicomRoutes from '@/routes/dicomRoutes';
+import annotationRoutes from '@/routes/annotationRoutes';
 
 const app: Application = express();
 
@@ -49,6 +50,7 @@ app.use(
 app.use(express.static('public'))
 // Routes
 app.use(apiPrefix + '/auth', authRoutes);
+app.use(apiPrefix + '/annotation', annotationRoutes);
 app.use(apiPrefix + '/dicom', dicomRoutes);
 // app.use('/api/users', userRoutes);
 
