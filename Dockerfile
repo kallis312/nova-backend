@@ -20,4 +20,4 @@ COPY --from=builder /app/prisma /app/prisma
 COPY --from=builder /app/dist /app/dist
 
 # ENTRYPOINT ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && node ./dist/server.js"]
-ENTRYPOINT ["sh", "-c", "npx prisma migrate deploy && node ./dist/server.js"]
+ENTRYPOINT ["sh", "-c", "npx prisma migrate deploy && node -r module-alias/register dist/server.js"]
