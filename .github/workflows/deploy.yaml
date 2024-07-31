@@ -76,3 +76,4 @@ jobs:
             sudo docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_ACCESS_TOKEN }}
             docker compose -f $DOCKER_COMPOSE_PATH down -v
             docker compose -f $DOCKER_COMPOSE_PATH up -d
+            sudo docker rmi $(docker image ls -aq) >/dev/null 2>&1 || true
