@@ -61,8 +61,8 @@ jobs:
           DOCKER_ID: ${{ secrets.DOCKER_ID }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
           DOCKER_IMAGE_NAME: ${{ secrets.DOCKER_IMAGE_NAME }}
-          CONFIG_FILE: "/home/${{ secrets.AZURE_USERNAME }}/nova-server-staging/deploy/dev/.env.dev"
-          DOCKER_COMPOSE_PATH: "/home/${{ secrets.AZURE_USERNAME }}/nova-server-staging/deploy/dev/docker-compose.yml"
+          CONFIG_FILE: "/home/${{ secrets.AZURE_USERNAME }}/nova-server-staging/deploy/staging/.env.staging"
+          DOCKER_COMPOSE_PATH: "/home/${{ secrets.AZURE_USERNAME }}/nova-server-staging/deploy/staging/docker-compose.yml"
           DATABASE_URL: "mysql://${{ secrets.DATABASE_USER }}:${{ secrets.DATABASE_PASSWORD }}@mysql-nova-server:3306/nova"
         with:
           host: ${{ secrets.AZURE_HOST }}
