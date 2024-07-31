@@ -24,7 +24,7 @@ on:
           - warning
           - debug
 jobs:
-  deploy-to-dev:
+  deploy-to-staging:
     runs-on: ubuntu-latest
     if: github.ref != 'refs/heads/main'
     steps:
@@ -53,7 +53,7 @@ jobs:
           username: ${{ secrets.AZURE_USERNAME }}
           key: ${{ secrets.AZURE_SSH_KEY }}
           source: "deploy/"
-          target: "/home/${{ secrets.AZURE_USERNAME }}/nova-server-test"
+          target: "/home/${{ secrets.AZURE_USERNAME }}/nova-server-staging"
 
       - name: SSH into AZURE instance and deploy
         uses: appleboy/ssh-action@v1.0.3
@@ -61,8 +61,8 @@ jobs:
           DOCKER_ID: ${{ secrets.DOCKER_ID }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
           DOCKER_IMAGE_NAME: ${{ secrets.DOCKER_IMAGE_NAME }}
-          CONFIG_FILE: "/home/${{ secrets.AZURE_USERNAME }}/nova-server-test/deploy/dev/.env.dev"
-          DOCKER_COMPOSE_PATH: "/home/${{ secrets.AZURE_USERNAME }}/nova-server-test/deploy/dev/docker-compose.yml"
+          CONFIG_FILE: "/home/${{ secrets.AZURE_USERNAME }}/nova-server-staging/deploy/dev/.env.dev"
+          DOCKER_COMPOSE_PATH: "/home/${{ secrets.AZURE_USERNAME }}/nova-server-staging/deploy/dev/docker-compose.yml"
           DATABASE_URL: "mysql://${{ secrets.DATABASE_USER }}:${{ secrets.DATABASE_PASSWORD }}@mysql-nova-server:3306/nova"
         with:
           host: ${{ secrets.AZURE_HOST }}
