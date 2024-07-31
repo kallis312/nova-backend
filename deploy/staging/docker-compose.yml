@@ -3,7 +3,7 @@ version: "3.8"
 services:
     app-dev:
         image: ${DOCKER_ID}/${DOCKER_IMAGE_NAME}:${IMAGE_TAG:-latest}
-        container_name: nova-server-dev
+        container_name: nova-server
         restart: unless-stopped
         env_file: ${CONFIG_FILE}
         ports:
