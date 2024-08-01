@@ -11,6 +11,7 @@ import { errorHandler } from '@/middlewares/errorHandler';
 import authRoutes from '@/routes/authRoutes';
 import dicomRoutes from '@/routes/dicomRoutes';
 import annotationRoutes from '@/routes/annotationRoutes';
+import path from 'path';
 
 const app: Application = express();
 
@@ -47,7 +48,7 @@ app.use(
   })
 );
 
-app.use(express.static('public'))
+app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 app.use(apiPrefix + '/auth', authRoutes);
 app.use(apiPrefix + '/annotation', annotationRoutes);

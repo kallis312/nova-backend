@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp -r ./public ./dist/public",
     "start": "node -r module-alias/register dist/server.js",
     "dev": "ts-node-dev -r tsconfig-paths/register src/server.ts",
     "migrate": "npx prisma migrate dev",
