@@ -6,9 +6,9 @@ on:
         - staging
       tags:
         - "*"
-  pull_request:
-    branches:
-      - staging
+  # pull_request:
+  #   branches:
+  #     - staging
   release:
     types:
       - created
