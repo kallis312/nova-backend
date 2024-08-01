@@ -220,15 +220,19 @@ paths:
         - Annotation
       summary: Using MedSAM
       description: Send coordinates and get segmentation results using MedSAM
+      requestBody:
+        $ref: "#/components/requestBodies/AutoAnnotation"
       responses:
         200:
           description: Successfully
           content:
             application/json:
-              example:
-                message: Get Data
               schema:
-                $ref: "#/components/schemas/MessageResponse"
+                type: object
+                properties:
+                  segmentation:
+                    type: object
+                    $ref: "#/components/schemas/Segmentation"
         401:
           $ref: "#/components/responses/Unauthorized"
       security:
@@ -239,15 +243,20 @@ paths:
         - Annotation
       summary: Using MedSAM
       description: This is used by jupiter to request for completely automatic annotation for a particular DICOM
+      requestBody:
+        $ref: "#/components/requestBodies/AutoAnnotation"
       responses:
         200:
           description: Successfully
           content:
             application/json:
-              example:
-                message: Get Data
               schema:
-                $ref: "#/components/schemas/MessageResponse"
+                type: object
+                properties:
+                  segmentation:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Segmentation"
         401:
           $ref: "#/components/responses/Unauthorized"
       security:
@@ -336,6 +345,18 @@ components:
               confirmPassword:
                 type: string
                 example: callisto
+    AutoAnnotation:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              dicomId:
+                type: string
+                example: 123wf1545
+              sliceIndex:
+                type: number
+                example: 12
   schemas:
     Dicom:
       type: object
@@ -379,23 +400,25 @@ components:
         annotations:
           type: array
           items:
-            type: object
-            properties:
-              type:
-                type: string
-                example: polygon
-              label:
-                type: string
-                example: tumor
-              points:
-                type: array
-                example: [[20, 13], [13, 15]]
-                items:
-                  type: array
-                  items:
-                    type: number
-                  maxLength: 2
-                  minLength: 2
+            $ref: "#/components/schemas/Segmentation"
+    Segmentation:
+      type: object
+      properties:
+        type:
+          type: string
+          example: polygon
+        label:
+          type: string
+          example: tumor
+        points:
+          type: array
+          example: [[20, 13], [13, 15]]
+          items:
+            type: array
+            items:
+              type: number
+            maxLength: 2
+            minLength: 2
 
   securitySchemes:
     JWTAuth:
