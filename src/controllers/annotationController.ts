@@ -17,19 +17,23 @@ export const medSAMAction = async (
     const body = medSAMActionValidator.parse(req.body);
     const segmentation = await medSAMActionService(body);
 
-    //mock data
-    res.json({
-      segmentation: {
-        type: "polygon",
-        label: "auto_detected_region",
-        points: [
-          [145, 195],
-          [155, 205],
-          [165, 200],
-          [155, 190],
-        ],
-      },
+    return res.json({
+      segmentation: segmentation?.Prediction,
     });
+
+    //mock data
+    // res.json({
+    //   segmentation: {
+    //     type: "polygon",
+    //     label: "auto_detected_region",
+    //     points: [
+    //       [145, 195],
+    //       [155, 205],
+    //       [165, 200],
+    //       [155, 190],
+    //     ],
+    //   },
+    // });
   } catch (error) {
     next(error);
   }
@@ -45,49 +49,57 @@ export const monaiAction = async (
     const segmentation = await monaiActionService(body);
 
     //mock data
-    res.json({
-      segmentation: [
-        {
-          type: "polygon",
-          label: "auto_detected_region",
-          points: [
-            [145, 195],
-            [155, 205],
-            [165, 200],
-            [155, 190],
-          ],
-        },
-        {
-          type: "polygon",
-          label: "auto_detected_region",
-          points: [
-            [145, 195],
-            [155, 205],
-            [165, 200],
-            [155, 190],
-          ],
-        },
-        {
-          type: "polygon",
-          label: "auto_detected_region",
-          points: [
-            [145, 195],
-            [155, 205],
-            [165, 200],
-            [155, 190],
-          ],
-        },
-        {
-          type: "polygon",
-          label: "auto_detected_region",
-          points: [
-            [145, 195],
-            [155, 205],
-            [165, 200],
-            [155, 190],
-          ],
-        },
-      ],
+    // res.json({
+    //   segmentation: [
+    //     {
+    //       type: "polygon",
+    //       label: "auto_detected_region",
+    //       points: [
+    //         [145, 195],
+    //         [155, 205],
+    //         [165, 200],
+    //         [155, 190],
+    //       ],
+    //     },
+    //     {
+    //       type: "polygon",
+    //       label: "auto_detected_region",
+    //       points: [
+    //         [145, 195],
+    //         [155, 205],
+    //         [165, 200],
+    //         [155, 190],
+    //       ],
+    //     },
+    //     {
+    //       type: "polygon",
+    //       label: "auto_detected_region",
+    //       points: [
+    //         [145, 195],
+    //         [155, 205],
+    //         [165, 200],
+    //         [155, 190],
+    //       ],
+    //     },
+    //     {
+    //       type: "polygon",
+    //       label: "auto_detected_region",
+    //       points: [
+    //         [145, 195],
+    //         [155, 205],
+    //         [165, 200],
+    //         [155, 190],
+    //       ],
+    //     },
+    //   ],
+    // });
+
+    if (!segmentation.Prediction) {
+      return res.json({ approximateTime: segmentation.ApproximateTime });
+    }
+
+    return res.json({
+      segmentation: segmentation?.Prediction,
     });
   } catch (error) {
     next(error);
