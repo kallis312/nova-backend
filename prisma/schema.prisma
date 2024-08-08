@@ -37,9 +37,9 @@ enum DicomStatus {
 model Annotation {
   id            Int      @id @default(autoincrement())
   annotatedBy   String
-  annotatedUser User     @relation(fields: [annotatedBy], references: [username])
+  annotatedUser User     @relation(fields: [annotatedBy], references: [username], onDelete: Cascade)
   annotatedAt   DateTime @updatedAt
-  slices        Json?    @default("[]")
-  Dicom         Dicom    @relation(fields: [dicomId], references: [id])
+  slices        Json     @default("[]")
+  Dicom         Dicom    @relation(fields: [dicomId], references: [id], onDelete: Cascade)
   dicomId       String
 }
