@@ -221,7 +221,7 @@ paths:
       summary: Using MedSAM
       description: Send coordinates and get segmentation results using MedSAM
       requestBody:
-        $ref: "#/components/requestBodies/AutoAnnotation"
+        $ref: "#/components/requestBodies/AnnotationMedSAM"
       responses:
         200:
           description: Successfully
@@ -244,7 +244,7 @@ paths:
       summary: Using MedSAM
       description: This is used by jupiter to request for completely automatic annotation for a particular DICOM
       requestBody:
-        $ref: "#/components/requestBodies/AutoAnnotation"
+        $ref: "#/components/requestBodies/AnnotationMonai"
       responses:
         200:
           description: Successfully
@@ -345,7 +345,7 @@ components:
               confirmPassword:
                 type: string
                 example: callisto
-    AutoAnnotation:
+    AnnotationMedSAM:
       content:
         application/json:
           schema:
@@ -353,10 +353,37 @@ components:
             properties:
               dicomId:
                 type: string
-                example: 123wf1545
+                example: dicom001
               sliceIndex:
                 type: number
                 example: 12
+              dataType:
+                type: string
+                example: image
+              S3URI:
+                type: string
+                example: s3://bucket-name/path/to/data
+              coordinates:
+                type: array
+                example: [[10, 20], [15, 25], [20, 20], [15, 15]]
+    AnnotationMonai:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              dicomId:
+                type: string
+                example: dicom001
+              sliceIndex:
+                type: number
+                example: 12
+              dataType:
+                type: string
+                example: image
+              S3URI:
+                type: string
+                example: s3://bucket-name/path/to/data
   schemas:
     Dicom:
       type: object

@@ -4,14 +4,9 @@ export const medSAMActionValidator = z
   .object({
     dicomId: z.string(),
     sliceIndex: z.number(),
-    coordinates: z.array(
-      z
-        .object({
-          x: z.number(),
-          y: z.number(),
-        })
-        .strict()
-    ),
+    dataType: z.string(),
+    S3URI: z.string(),
+    coordinates: z.array(z.array(z.number()).length(2)),
   })
   .strict();
 
@@ -19,6 +14,8 @@ export const monaiActionValidator = z
   .object({
     dicomId: z.string(),
     sliceIndex: z.number(),
+    dataType: z.string(),
+    S3URI: z.string(),
   })
   .strict();
 

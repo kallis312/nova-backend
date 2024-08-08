@@ -5,17 +5,17 @@ import {
 import { annotationServer } from "@/config/axiosConfig";
 
 export const medSAMActionService = async (data: medSAMActionDto) => {
-  const { dicomId, sliceIndex, coordinates } = data;
-
-  //TODO get dicom information from Jupiter server to pass into API body
+  const { dicomId, sliceIndex, coordinates, dataType, S3URI } = data;
 
   //call mock annotation server
   const body = {
-    DataType: "image",
-    S3URI: "s3://bucket-name/path/to/data",
+    dicomId,
+    sliceIndex,
+    DataType: dataType,
+    S3URI: S3URI,
     Model: "MedSAM",
     Task: null,
-    BBox: [473.07, 395.93, 38.65, 28.67],
+    BBox: coordinates,
   };
   const response = await annotationServer.post("/online", body);
 
@@ -23,14 +23,14 @@ export const medSAMActionService = async (data: medSAMActionDto) => {
 };
 
 export const monaiActionService = async (data: monaiActionDto) => {
-  const { dicomId, sliceIndex } = data;
-
-  //TODO get dicom information from Jupiter server to pass into API body
+  const { dicomId, sliceIndex, dataType, S3URI } = data;
 
   //call mock annotation server
   const body = {
-    DataType: "series",
-    S3URI: "s3://bucket-name/path/to/data",
+    dicomId,
+    sliceIndex,
+    DataType: dataType,
+    S3URI: S3URI,
     Model: "nnU-Net",
     Task: null,
     BBox: null,
