@@ -10,6 +10,10 @@ export const annotationServer = axios.create({
 
 export const jupiterServer = axios.create({
   baseURL: process.env.JUPITER_SERVER_URL,
+  auth: {
+    username: process.env.JUPITER_USERNAME ?? 'Jupiter Server Username',
+    password: process.env.JUPITER_PASSWORD ?? 'Jupiter Server Password',
+  },
   httpsAgent: new https.Agent({
     rejectUnauthorized: false,
   }),

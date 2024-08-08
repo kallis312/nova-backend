@@ -13,7 +13,7 @@ info:
 servers:
   - url: /api/v1
     description: "Local-Server"
-  - url: http://20.78.12.2:8080/api/v1
+  - url: https://20.78.12.2.nip.io/api/v1
     description: "Staging-Server"
   - url: https://nova-production-server/api/v1
     description: "Production-Server"
@@ -133,11 +133,9 @@ paths:
         200:
           description: Successfully
           content:
-            application/json:
-              example:
-                message: Downloading...
+            application/zip:
               schema:
-                $ref: "#/components/schemas/MessageResponse"
+                type: string
         500:
           $ref: "#/components/responses/InternalError"
         401:
@@ -173,7 +171,7 @@ paths:
                   annotatedAt:
                     type: string
                     example: 2024-07-29T08:30:16.757Z
-                  slices: 
+                  slices:
                     type: array
                     items:
                       $ref: "#/components/schemas/Slice"
@@ -212,6 +210,24 @@ paths:
           $ref: "#/components/responses/InternalError"
         401:
           $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+  /dicom/jupiter:
+    get:
+      tags:
+        - Dicom
+      summary: Get all Dicoms from Jupiter server.
+      responses:
+        200:
+          description: successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dicom"
+        500:
+          $ref: "#/components/responses/InternalError"
       security:
         - JWTAuth: []
   /annotation/MedSAM:
