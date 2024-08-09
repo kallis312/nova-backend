@@ -381,6 +381,10 @@ components:
                 example: s3://bucket-name/path/to/data
               coordinates:
                 type: array
+                items:
+                  type: array
+                  items:
+                    type: number
                 example: [[10, 20], [15, 25], [20, 20], [15, 15]]
     AnnotationMonai:
       content:
