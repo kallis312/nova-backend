@@ -277,6 +277,221 @@ paths:
           $ref: "#/components/responses/Unauthorized"
       security:
         - JWTAuth: []
+  /admin/users:
+    get:
+      tags:
+        - Admin
+      summary: Admin get list users
+      description: Admin get list users
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            example: 1
+            minimum: 1
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 100
+                  page:
+                    type: integer
+                    example: 1
+                  perPage:
+                    type: integer
+                    example: 10
+                  users:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+  /admin/users/{id}:
+    get:
+      tags:
+        - Admin
+      summary: Admin get detail information user
+      description: Admin get detail information user by User Id
+      parameters:
+        - name: id
+          in: path
+          description: User Id
+          required: true
+          schema:
+            type: number
+            example: 15
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/User"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+    put:
+      tags:
+        - Admin
+      summary: Admin updates a user's information
+      description: Admin updates a user's information by User Id
+      parameters:
+        - name: id
+          in: path
+          description: User Id
+          required: true
+          schema:
+            type: number
+            example: 15
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: callisto
+                password:
+                  type: string
+                  example: callisto
+                confirmPassword:
+                  type: string
+                  example: callisto
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+    delete:
+      tags:
+        - Admin
+      summary: Admin delete a user
+      description: Admin delete a user by User Id
+      parameters:
+        - name: id
+          in: path
+          description: User Id
+          required: true
+          schema:
+            type: number
+            example: 15
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+  /admin/users/:
+    post:
+      tags:
+        - Admin
+      summary: Admin create a user
+      description: Admin create a user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: callisto
+                password:
+                  type: string
+                  example: callisto
+                confirmPassword:
+                  type: string
+                  example: callisto
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+
+  /admin/dicoms/{id}/review:
+    post:
+      tags:
+        - Admin
+      summary: Admin review annotator's annotation
+      description: Admin accepts or rejects an annotation dicom of an annotator
+      parameters:
+        - name: id
+          in: path
+          description: Dicom Id
+          required: true
+          schema:
+            type: string
+            example: dicom001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - accept
+                    - reject
+                  example: accept
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
 components:
   responses:
     Login:
@@ -466,6 +681,18 @@ components:
               type: number
             maxLength: 2
             minLength: 2
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 15
+        username:
+          type: string
+          example: callisto
+        role:
+          type: string
+          example: USER
 
   securitySchemes:
     JWTAuth:
