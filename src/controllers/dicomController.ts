@@ -9,11 +9,11 @@ const perPage = 10;
 export const getDicomList = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const page = Number(req.params.page)
-    if (isNaN(page)) throw new Error('Invalid page')
+    if (isNaN(page) || page < 1) throw new Error('Invalid page')
     const total = await prisma.dicom.count()
     const dicoms = await prisma.dicom.findMany({
-      skip: (page - 1) * 10,
-      take: 10,
+      skip: (page - 1) * perPage,
+      take: perPage,
     })
     res.json({
       total,
@@ -29,12 +29,12 @@ export const getDicomList = async (req: Request, res: Response, next: NextFuncti
 export const getDicom = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params
-    
+
     const existDicom = await prisma.dicom.findUnique({
       where: { id },
     })
     if (!existDicom) throw new Error('No dicom found');
-    
+
     const response = await jupiterServer.get('/dicom/' + id, {
       responseType: 'stream'
     });
