@@ -12,5 +12,5 @@ export const errorHandler = (err: any, _req: Request, res: Response, next: NextF
   }
 
   logger.error(errorMessage);
-  res.status(statusCode).json({ error: errorMessage });
+  res.status(statusCode).json({ message: errorMessage });
 };
