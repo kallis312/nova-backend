@@ -19,4 +19,11 @@ export const dicomAnnotationVallidator = z.object({
   )
 }).strict();
 
+export const reviewDicomValidator = z
+  .object({
+    status: z.enum(["accept", "reject"]),
+  })
+  .strict();
+
 export type DicomAnnotation = z.infer<typeof dicomAnnotationVallidator>;
+export type reviewDicomDto = z.infer<typeof reviewDicomValidator>;

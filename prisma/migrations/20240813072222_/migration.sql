@@ -15,7 +15,7 @@ CREATE TABLE `Dicom` (
     `patientId` VARCHAR(191) NOT NULL,
     `studyDate` DATETIME(3) NOT NULL,
     `modality` VARCHAR(191) NOT NULL,
-    `status` ENUM('annotated', 'unannotated') NULL DEFAULT 'unannotated',
+    `status` ENUM('unannotated', 'annotated', 'accept', 'reject') NULL DEFAULT 'unannotated',
 
     UNIQUE INDEX `Dicom_id_key`(`id`),
     PRIMARY KEY (`id`)
