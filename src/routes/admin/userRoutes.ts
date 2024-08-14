@@ -1,4 +1,4 @@
-import { createUser, deleteUser, getUser, getUserList, updateUser } from '@/controllers/admin/userController';
+import { createUser, deleteUser, getUser, getUserList, updateUser, updateUserPassword } from '@/controllers/admin/userController';
 import { Router } from 'express';
 
 const router = Router();
@@ -9,5 +9,6 @@ router
   .get('/:id', getUser)
   .put('/:id', updateUser)
   .delete('/:id', deleteUser)
+  .put('/:id/password', updateUserPassword)
 
 export default router;

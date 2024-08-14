@@ -5,11 +5,9 @@ import helmet from 'helmet';
 import cors from 'cors';
 import session from 'express-session';
 import passport from '@/config/passport';
-// import userRoutes from './routes/userRoutes';
 import requestLogger from '@/middlewares/requestLogger';
 import { errorHandler } from '@/middlewares/errorHandler';
 import routes from '@/routes';
-import path from 'path';
 
 const app: Application = express();
 
@@ -46,7 +44,7 @@ app.use(
   })
 );
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 // Routes
 app.use(apiPrefix, routes);
 
