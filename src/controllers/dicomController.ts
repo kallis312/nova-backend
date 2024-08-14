@@ -70,6 +70,9 @@ export const getAnnotation = async (req: Request, res: Response, next: NextFunct
         slices: true,
       }
     })
+
+    if(!annotation) throw new Error(`No annotation found for dicom with id = ${id}`);
+
     res.json(annotation);
   } catch (error) {
     next(error)

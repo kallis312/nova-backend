@@ -12,10 +12,18 @@ export const dicomAnnotationVallidator = z.object({
             z.array(
               z.number()
             ).length(2)
-          )
+          ).min(1)
         }).strict()
       )
     }).strict()
+  ).refine(
+    (slices) => {
+      const sliceIndexes = slices.map((slice) => slice.sliceIndex);
+      return new Set(sliceIndexes).size === sliceIndexes.length;
+    },
+    {
+      message: "sliceIndex values must be unique",
+    }
   )
 }).strict();
 
