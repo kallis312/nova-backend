@@ -4,12 +4,13 @@ import { dicomAnnotationVallidator } from '@/validators/dicomValidator';
 import { Dicom } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 
-const perPage = 10;
-
 export const getDicomList = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const page = Number(req.params.page)
     if (isNaN(page) || page < 1) throw new Error('Invalid page')
+    const perPage = Number(req.query.perPage ?? 1)
+    if (isNaN(perPage) || perPage < 1) throw new Error('Invalid per page number')
+
     const total = await prisma.dicom.count()
     const dicoms = await prisma.dicom.findMany({
       skip: (page - 1) * perPage,
