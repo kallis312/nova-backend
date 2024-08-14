@@ -37,6 +37,14 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
     const id = Number(req.params.id)
     if (isNaN(id)) throw new Error('Invalid user id.');
 
+    const existUser = await prisma.user.findUnique({
+      where: {
+        id
+      }
+    })
+
+    if (!existUser) throw new Error('User does not exist.')
+
     const user = await prisma.user.findUnique({
       where: {
         id
