@@ -8,6 +8,7 @@ import passport from '@/config/passport';
 import requestLogger from '@/middlewares/requestLogger';
 import { errorHandler } from '@/middlewares/errorHandler';
 import routes from '@/routes';
+import path from 'path'
 
 const app: Application = express();
 
@@ -44,7 +45,7 @@ app.use(
   })
 );
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, "../public")));
 // Routes
 app.use(apiPrefix, routes);
 
