@@ -6,7 +6,7 @@ export const medSAMActionValidator = z
     sliceIndex: z.number(),
     dataType: z.string(),
     S3URI: z.string(),
-    coordinates: z.array(z.array(z.number()).length(2)),
+    coordinates: z.array(z.array(z.number()).length(2)).min(1),
   })
   .strict();
 
