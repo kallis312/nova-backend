@@ -8,18 +8,18 @@ export const getDicomList = async (req: Request, res: Response, next: NextFuncti
   try {
     const page = Number(req.params.page)
     if (isNaN(page) || page < 1) throw new Error('Invalid page')
-    const perPage = Number(req.query.perPage ?? 1)
-    if (isNaN(perPage) || perPage < 1) throw new Error('Invalid per page number')
+    const limit = Number(req.query.limit ?? 100)
+    if (isNaN(limit) || limit < 1) throw new Error('Invalid per page number')
 
     const total = await prisma.dicom.count()
     const dicoms = await prisma.dicom.findMany({
-      skip: (page - 1) * perPage,
-      take: perPage,
+      skip: (page - 1) * limit,
+      take: limit,
     })
     res.json({
       total,
       page,
-      perPage,
+      perPage: limit,
       dicoms
     });
   } catch (error) {
