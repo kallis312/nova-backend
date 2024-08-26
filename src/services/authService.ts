@@ -7,14 +7,13 @@ import jwt from 'jsonwebtoken';
 const secret = process.env.JWT_SECRET ?? 'Your secret key'
 
 export const generateToken = (user: User) => {
-  return jwt.sign({ id: user.id, username: user.username }, secret, { expiresIn: '1h' });
+  return jwt.sign({ id: user.id, username: user.username }, secret);
 };
 
 export const loginUser = async ({ username, password }: LoginRequest) => {
   const user = await prisma.user.findUnique({
     where: { username },
   });
-
   if (!user) throw new Error('Invalid username or password');
 
   const isPasswordValid = bcrypt.compareSync(password, user.password);

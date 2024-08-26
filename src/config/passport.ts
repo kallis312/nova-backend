@@ -5,6 +5,16 @@ import prisma from './dbConfig';
 
 dotenv.config();
 
+declare global {
+  namespace Express {
+    interface User {
+      id: number
+      username: string
+      password: string
+    }
+  }
+}
+
 const options: StrategyOptionsWithoutRequest = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.JWT_SECRET ?? '',
