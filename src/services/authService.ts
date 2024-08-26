@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 const secret = process.env.JWT_SECRET ?? 'Your secret key'
 
 export const generateToken = (user: User) => {
-  return jwt.sign({ id: user.id, username: user.username }, secret, { expiresIn: '2 days' });
+  return jwt.sign({ id: user.id, username: user.username }, secret);
 };
 
 export const loginUser = async ({ username, password }: LoginRequest) => {
@@ -17,7 +17,7 @@ export const loginUser = async ({ username, password }: LoginRequest) => {
   if (!user) throw new Error('Invalid username or password');
 
   const isPasswordValid = bcrypt.compareSync(password, user.password);
-  
+
   if (!isPasswordValid) throw new Error('Invalid username or password');
 
   return user;
