@@ -691,9 +691,12 @@ components:
         label:
           type: string
           example: tumor
+        labelIndex:
+          type: number
+          example: 0
         points:
           type: array
-          example: [[20, 13], [13, 15]]
+          example: [[10, 10], [20, 10], [20, 20], [10, 20]]
           items:
             type: array
             items:
