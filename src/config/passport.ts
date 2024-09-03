@@ -12,7 +12,7 @@ declare global {
       id: number
       username: string
       password: string
-      role: ERole
+      role: ERole | null
     }
   }
 }
