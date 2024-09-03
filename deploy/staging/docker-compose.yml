@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+    app-dev:
+        image: ${DOCKER_ID}/${DOCKER_IMAGE_NAME}:${IMAGE_TAG:-latest}
+        container_name: nova-server
+        restart: unless-stopped
+        env_file: ${CONFIG_FILE}
+        ports:
+          - "8080:8080"
+        environment:
+          - DATABASE_URL=${DATABASE_URL} 
+        networks:
+          - nova-server
+
+networks:
+  nova-server:
+    external: true

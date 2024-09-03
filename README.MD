@@ -36,3 +36,4 @@ npm run build
 ```sh
 npm start
 ```
+- You can view the API document by running `http://localhost:{PORT}/docs`.

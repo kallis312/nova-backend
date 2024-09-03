@@ -2,8 +2,20 @@ import dotenv from 'dotenv';
 import passport from 'passport';
 import { ExtractJwt, Strategy as JwtStrategy, StrategyOptionsWithoutRequest } from 'passport-jwt';
 import prisma from './dbConfig';
+import { ERole } from '@prisma/client';
 
 dotenv.config();
+
+declare global {
+  namespace Express {
+    interface User {
+      id: number
+      username: string
+      password: string
+      role: ERole
+    }
+  }
+}
 
 const options: StrategyOptionsWithoutRequest = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

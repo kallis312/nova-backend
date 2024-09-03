@@ -1,0 +1,861 @@
+openapi: 3.0.3
+info:
+  title: Nova Slicer Server 1.0
+  description: |-
+    This is the API definition for the Nova slicer server.
+
+    Reference Link:
+    - [The nova slicer server repository](https://github.com/callisto-ai)
+    - [The source API definition for the Nova slicer server](https://github.com/callisto-ai)
+  contact:
+    email: kyosuke@callisto-ai.com
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api/v1
+    description: "Local-Server"
+  - url: https://20.78.12.2.nip.io/api/v1
+    description: "Staging-Server"
+  - url: https://nova-production-server/api/v1
+    description: "Production-Server"
+tags:
+  - name: Auth
+    description: User Authentication
+  - name: Dicom
+    description: DICOM Management
+  - name: Label
+    description: Label Management
+  - name: Annotation
+    description: Annotation (automatic, AI integration)
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Logs user into the system
+      requestBody:
+        $ref: "#/components/requestBodies/Login"
+      responses:
+        200:
+          $ref: "#/components/responses/Login"
+        500:
+          description: Invalid username/password supplied
+          content:
+            application/json:
+              example:
+                message: not found user
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register user into the system
+      requestBody:
+        $ref: "#/components/requestBodies/Register"
+      responses:
+        200:
+          $ref: "#/components/responses/Register"
+        500:
+          description: Invalid username/password supplied
+          content:
+            application/json:
+              example:
+                message: Passwords do not match
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+  /dicom/list/{page}:
+    get:
+      tags:
+        - Dicom
+      summary: Get dicom list by page number
+      description: Returns dicom list
+      parameters:
+        - name: page
+          in: path
+          description: Number of page
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Per page count for pagination
+          required: false
+          schema:
+            type: integer
+            example: 10
+            minimum: 10
+      responses:
+        200:
+          $ref: "#/components/responses/DicomList"
+        500:
+          $ref: "#/components/responses/InternalError"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+  /dicom/get/{id}:
+    get:
+      tags:
+        - Dicom
+      summary: Get a specific DICOM by ID
+      description: Download DICOM file
+      parameters:
+        - name: id
+          in: path
+          description: Dicom Id
+          required: true
+          schema:
+            type: string
+            example: dicom001
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/zip:
+              schema:
+                type: string
+        500:
+          $ref: "#/components/responses/InternalError"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+  /dicom/annotation/{id}:
+    get:
+      tags:
+        - Dicom
+      summary: Get a annotation of a specific DICOM ID
+      description: |-
+        Get the annotation of a specific DICOM ID (all slices included)
+      parameters:
+        - name: id
+          in: path
+          description: Dicom Id
+          required: true
+          schema:
+            type: string
+            example: dicom001
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  annotatedBy:
+                    type: string
+                    example: callisto
+                  annotatedAt:
+                    type: string
+                    example: 2024-07-29T08:30:16.757Z
+                  slices:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Slice"
+        500:
+          $ref: "#/components/responses/InternalError"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+    post:
+      tags:
+        - Dicom
+      summary: Update/create/save
+      description: Update/create/save the annotation of a specific DICOM ID
+      parameters:
+        - name: id
+          in: path
+          description: Dicom Id
+          required: true
+          schema:
+            type: string
+            example: dicom001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DicomAnnotation"
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DicomAnnotation"
+        500:
+          $ref: "#/components/responses/InternalError"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+  /dicom/jupiter:
+    get:
+      tags:
+        - Dicom
+      summary: Get all Dicoms from Jupiter server.
+      responses:
+        200:
+          description: successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dicom"
+        500:
+          $ref: "#/components/responses/InternalError"
+      security:
+        - JWTAuth: []
+  /label:
+    get:
+      tags:
+        - Label
+      summary: All LabelPreset
+      description: Get all LabelPreset
+      responses:
+        200:
+          $ref: "#/components/responses/LableList"
+        500:
+          $ref: "#/components/responses/InternalError"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+    post:
+      tags:
+        - Label
+      summary: Create a new LabelPreset
+      description: Get all LabelPreset
+      requestBody:
+        $ref: "#/components/requestBodies/CreateLabel"
+      responses:
+        200:
+          $ref: "#/components/responses/MessageResponse"
+        500:
+          $ref: "#/components/responses/InternalError"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+  /label/{id}:
+    put:
+      tags:
+        - Label
+      summary: Update a LabelPreset
+      description: Update a LabelPreset
+      parameters:
+        - name: id
+          in: path
+          description: LabelPreset Id
+          required: true
+          schema:
+            type: number
+            example: 1
+      requestBody:
+        $ref: "#/components/requestBodies/CreateLabel"
+      responses:
+        200:
+          $ref: "#/components/responses/MessageResponse"
+        500:
+          $ref: "#/components/responses/InternalError"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+    delete:
+      tags:
+        - Label
+      summary: Update a LabelPreset
+      description: Update a LabelPreset
+      parameters:
+        - name: id
+          in: path
+          description: LabelPreset Id
+          required: true
+          schema:
+            type: number
+            example: 1
+      responses:
+        200:
+          $ref: "#/components/responses/MessageResponse"
+        500:
+          $ref: "#/components/responses/InternalError"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+  /annotation/MedSAM:
+    post:
+      tags:
+        - Annotation
+      summary: Using MedSAM
+      description: Send coordinates and get segmentation results using MedSAM
+      requestBody:
+        $ref: "#/components/requestBodies/AnnotationMedSAM"
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  segmentation:
+                    type: object
+                    $ref: "#/components/schemas/Segmentation"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+  /annotation/Monai:
+    post:
+      tags:
+        - Annotation
+      summary: Using MedSAM
+      description: This is used by jupiter to request for completely automatic annotation for a particular DICOM
+      requestBody:
+        $ref: "#/components/requestBodies/AnnotationMonai"
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  segmentation:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Segmentation"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+  /admin/users:
+    get:
+      tags:
+        - Admin
+      summary: Admin get list users
+      description: Admin get list users
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            example: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Per page count for pagination
+          required: false
+          schema:
+            type: integer
+            example: 10
+            minimum: 10
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 100
+                  page:
+                    type: integer
+                    example: 1
+                  perPage:
+                    type: integer
+                    example: 10
+                  users:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+  /admin/users/{id}:
+    get:
+      tags:
+        - Admin
+      summary: Admin get detail information user
+      description: Admin get detail information user by User Id
+      parameters:
+        - name: id
+          in: path
+          description: User Id
+          required: true
+          schema:
+            type: number
+            example: 2
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/User"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+    put:
+      tags:
+        - Admin
+      summary: Admin updates a user's information
+      description: Admin updates a user's information by User Id
+      parameters:
+        - name: id
+          in: path
+          description: User Id
+          required: true
+          schema:
+            type: number
+            example: 2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: callisto
+                role:
+                  type: string
+                  enum:
+                    - ADMIN
+                    - USER
+                  example: USER
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/User"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+    delete:
+      tags:
+        - Admin
+      summary: Admin delete a user
+      description: Admin delete a user by User Id
+      parameters:
+        - name: id
+          in: path
+          description: User Id
+          required: true
+          schema:
+            type: number
+            example: 15
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: a user has been successfully deleted.
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+  /admin/users/:
+    post:
+      tags:
+        - Admin
+      summary: Admin create a user
+      description: Admin create a user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: callisto
+                password:
+                  type: string
+                  example: callisto
+                confirmPassword:
+                  type: string
+                  example: callisto
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/User"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+  /admin/users/{id}/password:
+    put:
+      tags:
+        - Admin
+      summary: Admin updates a user's password by User Id
+      description: Admin updates a user's password by User Id
+      parameters:
+        - name: id
+          in: path
+          description: User Id
+          required: true
+          schema:
+            type: number
+            example: 2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: callisto
+                confirmPassword:
+                  type: string
+                  example: callisto
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/User"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+
+  /admin/dicoms/{id}/review:
+    post:
+      tags:
+        - Admin
+      summary: Admin review annotator's annotation
+      description: Admin accepts or rejects an annotation dicom of an annotator
+      parameters:
+        - name: id
+          in: path
+          description: Dicom Id
+          required: true
+          schema:
+            type: string
+            example: dicom001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - accept
+                    - reject
+                  example: accept
+      responses:
+        200:
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+components:
+  responses:
+    Login:
+      description: Login Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                example: testuser
+              role:
+                type: string
+                enum:
+                  - ADMIN
+                  - USER
+                example: USER
+              token:
+                type: string
+                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJjYWxsaXN0byIsImlhdCI6MTcyMTg3NTI1OSwiZXhwIjoxNzIxODc4ODU5fQ.4oNPNjp4kfNotv-e2yDbfF_FqskQc3nnkmFVW5RaE1k
+    Register:
+      description: Register Response
+      content:
+        application/json:
+          schema:
+            type: object
+            example:
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJjYWxsaXN0byIsImlhdCI6MTcyMTg3NTI1OSwiZXhwIjoxNzIxODc4ODU5fQ.4oNPNjp4kfNotv-e2yDbfF_FqskQc3nnkmFVW5RaE1k
+            properties:
+              token:
+                type: string
+    DicomList:
+      description: Successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              total:
+                type: integer
+                example: 100
+              page:
+                type: integer
+                example: 1
+              perPage:
+                type: integer
+                example: 10
+              dicoms:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dicom"
+    LableList:
+      description: Label preset list
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                  example: 1
+                name:
+                  type: string
+                  example: Head
+                creator:
+                  type: string
+                  example: testuser
+                labels:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Label"
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          example:
+            message: Unauthorized
+    InternalError:
+      description: InternalError
+      content:
+        application/json:
+          example:
+            message: An unknown error occurred
+    MessageResponse:
+      description: Successfully
+      content:
+        application/json:
+          example:
+            message: Created successfully
+  requestBodies:
+    Login:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                example: callisto
+              password:
+                type: string
+                example: callisto
+    Register:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                example: callisto
+              password:
+                type: string
+                example: callisto
+              confirmPassword:
+                type: string
+                example: callisto
+    AnnotationMedSAM:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              dicomId:
+                type: string
+                example: dicom001
+              sliceIndex:
+                type: number
+                example: 12
+              dataType:
+                type: string
+                example: image
+              S3URI:
+                type: string
+                example: s3://bucket-name/path/to/data
+              coordinates:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+                example: [[10, 20], [15, 25], [20, 20], [15, 15]]
+    AnnotationMonai:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              dicomId:
+                type: string
+                example: dicom001
+              sliceIndex:
+                type: number
+                example: 12
+              dataType:
+                type: string
+                example: image
+              S3URI:
+                type: string
+                example: s3://bucket-name/path/to/data
+    CreateLabel:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: Head
+              labels:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Label"
+  schemas:
+    Dicom:
+      type: object
+      properties:
+        id:
+          type: string
+          example: dicom001
+        patientId:
+          type: string
+          example: patient001
+        studyDate:
+          type: string
+          example: 2024-07-29T08:30:16.757Z
+        modality:
+          type: string
+          example: MRI
+        status:
+          type: string
+          example: unannotated
+          enum:
+            - unannotated
+            - annotated
+    DicomAnnotation:
+      type: object
+      properties:
+        slices:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/Slice"
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    Slice:
+      type: object
+      properties:
+        sliceIndex:
+          type: integer
+        annotations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Segmentation"
+    Segmentation:
+      type: object
+      properties:
+        type:
+          type: string
+          example: polygon
+        label:
+          type: string
+          example: tumor
+        labelIndex:
+          type: number
+          example: 0
+        points:
+          type: array
+          example: [[10, 10], [20, 10], [20, 20], [10, 20]]
+          items:
+            type: array
+            items:
+              type: number
+            maxLength: 2
+            minLength: 2
+    Label:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Head
+        color:
+          type: string
+          example: "#ff0000"
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 15
+        username:
+          type: string
+          example: callisto
+        role:
+          type: string
+          example: USER
+
+  securitySchemes:
+    JWTAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

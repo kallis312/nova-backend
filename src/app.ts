@@ -1,13 +1,14 @@
 import express, { Application } from 'express';
 import morgan from 'morgan';
+import swaggerUi from "swagger-ui-express";
 import helmet from 'helmet';
 import cors from 'cors';
 import session from 'express-session';
 import passport from '@/config/passport';
-import authRoutes from '@/routes/authRoutes';
-// import userRoutes from './routes/userRoutes';
 import requestLogger from '@/middlewares/requestLogger';
 import { errorHandler } from '@/middlewares/errorHandler';
+import routes from '@/routes';
+import path from 'path'
 
 const app: Application = express();
 
@@ -34,10 +35,19 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(
+  "/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(undefined, {
+    swaggerOptions: {
+      url: "/openapi.yaml",
+    },
+  })
+);
 
+app.use(express.static(path.join(__dirname, "../public")));
 // Routes
-app.use(apiPrefix + '/auth', authRoutes);
-// app.use('/api/users', userRoutes);
+app.use(apiPrefix, routes);
 
 // Error handling
 app.use(errorHandler);
