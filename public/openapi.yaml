@@ -11,7 +11,7 @@ info:
     email: kyosuke@callisto-ai.com
   version: 1.0.0
 servers:
-  - url: http://localhost:5000/api/v1
+  - url: /api/v1
     description: "Local-Server"
   - url: https://20.78.12.2.nip.io/api/v1
     description: "Staging-Server"
