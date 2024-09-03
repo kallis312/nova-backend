@@ -52,7 +52,7 @@ export const updateLable = async (req: Request, res: Response, next: NextFunctio
       }
     })
 
-    if (!existLabel) throw new Error("Lable not found.");
+    if (!existLabel) throw new Error("Lable not found.")
 
     const existLabelPresetName = await prisma.labelPreset.findFirst({
       where: {
