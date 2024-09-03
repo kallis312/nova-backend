@@ -24,12 +24,13 @@ enum EDicomReview {
 }
 
 model User {
-  id         Int          @id @default(autoincrement())
-  username   String       @unique
-  password   String
-  role       ERole?       @default(USER)
-  Annotation Annotation[]
-  Dicom      Dicom[]
+  id          Int           @id @default(autoincrement())
+  username    String        @unique
+  password    String
+  role        ERole?        @default(USER)
+  Annotation  Annotation[]
+  Dicom       Dicom[]
+  LabelPreset LabelPreset[]
 }
 
 model Dicom {
@@ -52,4 +53,12 @@ model Annotation {
   slices        Json     @default("[]")
   Dicom         Dicom    @relation(fields: [dicomId], references: [id], onDelete: Cascade)
   dicomId       String
+}
+
+model LabelPreset {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  lables      Json   @default("[]")
+  creator     String
+  creatorUser User   @relation(fields: [creator], references: [username], onDelete: Cascade)
 }
