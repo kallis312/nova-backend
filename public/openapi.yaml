@@ -11,7 +11,7 @@ info:
     email: kyosuke@callisto-ai.com
   version: 1.0.0
 servers:
-  - url: /api/v1
+  - url: http://localhost:5000/api/v1
     description: "Local-Server"
   - url: https://20.78.12.2.nip.io/api/v1
     description: "Staging-Server"
@@ -22,6 +22,8 @@ tags:
     description: User Authentication
   - name: Dicom
     description: DICOM Management
+  - name: Label
+    description: Label Management
   - name: Annotation
     description: Annotation (automatic, AI integration)
 paths:
@@ -207,6 +209,84 @@ paths:
                   $ref: "#/components/schemas/Dicom"
         500:
           $ref: "#/components/responses/InternalError"
+      security:
+        - JWTAuth: []
+  /label:
+    get:
+      tags:
+        - Label
+      summary: All LabelPreset
+      description: Get all LabelPreset
+      responses:
+        200:
+          $ref: "#/components/responses/LableList"
+        500:
+          $ref: "#/components/responses/InternalError"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+    post:
+      tags:
+        - Label
+      summary: Create a new LabelPreset
+      description: Get all LabelPreset
+      requestBody:
+        $ref: "#/components/requestBodies/CreateLabel"
+      responses:
+        200:
+          $ref: "#/components/responses/MessageResponse"
+        500:
+          $ref: "#/components/responses/InternalError"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+  /label/{id}:
+    put:
+      tags:
+        - Label
+      summary: Update a LabelPreset
+      description: Update a LabelPreset
+      parameters:
+        - name: id
+          in: path
+          description: LabelPreset Id
+          required: true
+          schema:
+            type: number
+            example: 1
+      requestBody:
+        $ref: "#/components/requestBodies/CreateLabel"
+      responses:
+        200:
+          $ref: "#/components/responses/MessageResponse"
+        500:
+          $ref: "#/components/responses/InternalError"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - JWTAuth: []
+    delete:
+      tags:
+        - Label
+      summary: Update a LabelPreset
+      description: Update a LabelPreset
+      parameters:
+        - name: id
+          in: path
+          description: LabelPreset Id
+          required: true
+          schema:
+            type: number
+            example: 1
+      responses:
+        200:
+          $ref: "#/components/responses/MessageResponse"
+        500:
+          $ref: "#/components/responses/InternalError"
+        401:
+          $ref: "#/components/responses/Unauthorized"
       security:
         - JWTAuth: []
   /annotation/MedSAM:
@@ -519,11 +599,19 @@ components:
         application/json:
           schema:
             type: object
-            example:
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJjYWxsaXN0byIsImlhdCI6MTcyMTg3NTI1OSwiZXhwIjoxNzIxODc4ODU5fQ.4oNPNjp4kfNotv-e2yDbfF_FqskQc3nnkmFVW5RaE1k
             properties:
+              username:
+                type: string
+                example: testuser
+              role:
+                type: string
+                enum:
+                  - ADMIN
+                  - USER
+                example: USER
               token:
                 type: string
+                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJjYWxsaXN0byIsImlhdCI6MTcyMTg3NTI1OSwiZXhwIjoxNzIxODc4ODU5fQ.4oNPNjp4kfNotv-e2yDbfF_FqskQc3nnkmFVW5RaE1k
     Register:
       description: Register Response
       content:
@@ -555,6 +643,28 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Dicom"
+    LableList:
+      description: Label preset list
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                  example: 1
+                name:
+                  type: string
+                  example: Head
+                creator:
+                  type: string
+                  example: testuser
+                labels:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Label"
     Unauthorized:
       description: Unauthorized
       content:
@@ -567,6 +677,12 @@ components:
         application/json:
           example:
             message: An unknown error occurred
+    MessageResponse:
+      description: Successfully
+      content:
+        application/json:
+          example:
+            message: Created successfully
   requestBodies:
     Login:
       content:
@@ -638,6 +754,19 @@ components:
               S3URI:
                 type: string
                 example: s3://bucket-name/path/to/data
+    CreateLabel:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: Head
+              labels:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Label"
   schemas:
     Dicom:
       type: object
@@ -703,6 +832,15 @@ components:
               type: number
             maxLength: 2
             minLength: 2
+    Label:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Head
+        color:
+          type: string
+          example: "#ff0000"
     User:
       type: object
       properties:
