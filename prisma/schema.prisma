@@ -58,7 +58,7 @@ model Annotation {
 model LabelPreset {
   id          Int    @id @default(autoincrement())
   name        String @unique
-  lables      Json   @default("[]")
+  labels      Json   @default("[]")
   creator     String
   creatorUser User   @relation(fields: [creator], references: [username], onDelete: Cascade)
 }

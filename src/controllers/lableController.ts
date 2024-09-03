@@ -29,7 +29,7 @@ export const createLabel = async (req: Request, res: Response, next: NextFunctio
       data: {
         name: name,
         creator: user.username,
-        lables: labels
+        labels
       }
     })
 
@@ -46,6 +46,14 @@ export const updateLable = async (req: Request, res: Response, next: NextFunctio
     const id = numIdValidator.parse(req.params.id)
     const { labels, name } = presetUpdateValidator.parse(req.body)
 
+    const existLabel = await prisma.labelPreset.findUnique({
+      where: {
+        id
+      }
+    })
+
+    if (!existLabel) throw new Error("Lable not found.");
+
     const existLabelPresetName = await prisma.labelPreset.findFirst({
       where: {
         id: {
@@ -59,8 +67,8 @@ export const updateLable = async (req: Request, res: Response, next: NextFunctio
 
     await prisma.labelPreset.update({
       data: {
-        lables: labels,
-        name: name
+        labels,
+        name
       },
       where: {
         id
@@ -84,13 +92,12 @@ export const deleteLable = async (req: Request, res: Response, next: NextFunctio
     const label = await prisma.labelPreset.findUnique({
       where: {
         id
-      },
-      include: {
-        creatorUser: true
       }
     })
 
-    if (label?.creatorUser.role !== 'ADMIN' && label?.creator !== user.username)
+    if (!label) throw new Error("Label not found")
+
+    if (user.role !== 'ADMIN' && label?.creator !== user.username)
       throw new Error("Only admin, creator can delete label")
 
     await prisma.labelPreset.delete({
