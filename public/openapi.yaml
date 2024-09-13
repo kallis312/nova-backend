@@ -816,7 +816,11 @@ components:
       properties:
         type:
           type: string
-          example: polygon
+          enum:
+            - segment
+            - bbox
+            - text
+          example: segment
         label:
           type: string
           example: tumor
