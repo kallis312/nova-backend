@@ -726,9 +726,6 @@ components:
               dataType:
                 type: string
                 example: image
-              S3URI:
-                type: string
-                example: s3://bucket-name/path/to/data
               coordinates:
                 type: array
                 items:
@@ -751,9 +748,6 @@ components:
               dataType:
                 type: string
                 example: image
-              S3URI:
-                type: string
-                example: s3://bucket-name/path/to/data
     CreateLabel:
       content:
         application/json:
