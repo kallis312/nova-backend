@@ -5,14 +5,13 @@ import {
 import { annotationServer } from "@/config/axiosConfig";
 
 export const medSAMActionService = async (data: medSAMActionDto) => {
-  const { dicomId, sliceIndex, coordinates, dataType, S3URI } = data;
+  const { dicomId, sliceIndex, coordinates, dataType } = data;
 
   //call mock annotation server
   const body = {
     dicomId,
     sliceIndex,
     DataType: dataType,
-    S3URI: S3URI,
     Model: "MedSAM",
     Task: null,
     BBox: coordinates,
@@ -23,14 +22,13 @@ export const medSAMActionService = async (data: medSAMActionDto) => {
 };
 
 export const monaiActionService = async (data: monaiActionDto) => {
-  const { dicomId, sliceIndex, dataType, S3URI } = data;
+  const { dicomId, sliceIndex, dataType } = data;
 
   //call mock annotation server
   const body = {
     dicomId,
     sliceIndex,
     DataType: dataType,
-    S3URI: S3URI,
     Model: "nnU-Net",
     Task: null,
     BBox: null,
