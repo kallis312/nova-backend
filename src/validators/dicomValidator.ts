@@ -8,6 +8,7 @@ export const dicomAnnotationVallidator = z.object({
         z.object({
           type: z.string(),
           label: z.string(),
+          labelIndex: z.number(),
           points: z.array(
             z.array(
               z.number()
